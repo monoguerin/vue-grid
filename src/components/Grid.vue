@@ -7,7 +7,7 @@
         :columns="leftColumns"
         :rows="data"
         @paneScroll="paneScroll"
-        @wheelPaneScroll="wheelPaneScroll">
+        @wheelPaneScroll="paneScroll">
       </Pane>
       <Pane
         position="right"
@@ -15,7 +15,7 @@
         :columns="columns"
         :rows="data"
         @paneScroll="paneScroll"
-        @wheelPaneScroll="wheelPaneScroll">
+        @wheelPaneScroll="paneScroll">
       </Pane>
     </div>
     <div v-else>
@@ -32,6 +32,14 @@
   import Pane from './Pane'
   import data from './config/data'
   import columns from './config/columns'
+
+  function getOtherPane (currentPane) {
+    let otherPane = 'left'
+    if (otherPane === currentPane) {
+      otherPane = 'right'
+    }
+    return `${otherPane}-pane`
+  }
 
   export default {
     name: 'Grid',
@@ -55,22 +63,7 @@
     methods: {
       paneScroll (paneComponent, evt) {
         const affectedPane = paneComponent.position
-        let otherPaneComponent
-        let otherPane = 'left'
-        if (otherPane === affectedPane) {
-          otherPane = 'right'
-        }
-        otherPaneComponent = this.$refs[`${otherPane}-pane`]
-        otherPaneComponent.$el.querySelector('.scroller').scrollTop = evt.target.scrollTop
-      },
-      wheelPaneScroll (paneComponent, evt) {
-        const affectedPane = paneComponent.position
-        let otherPaneComponent
-        let otherPane = 'left'
-        if (otherPane === affectedPane) {
-          otherPane = 'right'
-        }
-        otherPaneComponent = this.$refs[`${otherPane}-pane`]
+        let otherPaneComponent = this.$refs[getOtherPane(affectedPane)]
         otherPaneComponent.$el.querySelector('.scroller').scrollTop = evt.target.scrollTop
       }
     }
