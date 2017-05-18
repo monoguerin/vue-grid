@@ -17,7 +17,7 @@
     props: ['rows', 'columns', 'position', 'handleScroll', 'handleMouseWheel'],
     computed: {
       virtualHeight () {
-        return this.rows.length * 28
+        return this.rows.length * (28 + 1)
       }
     }
   }

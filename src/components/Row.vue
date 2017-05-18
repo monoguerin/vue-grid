@@ -27,6 +27,7 @@
     line-height: 1.8;
     width: 100%;
     overflow: hidden;
+    border-bottom: 1px solid black;
   }
 
   .slick-row:after {

@@ -8,8 +8,8 @@
         :rows="data"
         @paneScroll="paneScroll"
         @wheelPaneScroll="paneScroll">
-      </Pane>
-      <Pane
+      </Pane><!--
+   --><Pane
         position="right"
         ref="right-pane"
         :columns="columns"
@@ -19,15 +19,14 @@
       </Pane>
     </div>
     <div v-else>
-      <Columns :columns="columns"></Columns>
+      <ColumnsHeaders :columns="columns"></ColumnsHeaders>
       <Rows :rows="data" :columns="columns"></Rows>
     </div>
-    <div tabindex="0" hidefocus="" style="position:fixed;width:0;height:0;top:0;left:0;outline:0;"></div>
   </div>
 </template>
 
 <script>
-  import Columns from './Columns'
+  import ColumnsHeaders from './ColumnsHeaders'
   import Rows from './Rows'
   import Pane from './Pane'
   import data from './config/data'
@@ -44,7 +43,7 @@
   export default {
     name: 'Grid',
     components: {
-      'Columns': Columns,
+      'ColumnsHeaders': ColumnsHeaders,
       'Rows': Rows,
       'Pane': Pane
     },

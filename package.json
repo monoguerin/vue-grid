@@ -14,7 +14,9 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
   },
   "dependencies": {
-    "vue": "^2.2.6"
+    "intersection-observer": "^0.2.1",
+    "vue": "^2.2.6",
+    "vue-virtual-scroller": "^0.6.1"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",

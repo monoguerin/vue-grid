@@ -1,6 +1,6 @@
 <template>
   <div :class="positionClass" class="data-pane">
-    <Columns :columns="columns"></Columns>
+    <ColumnsHeaders :columns="columns"></ColumnsHeaders>
     <Rows 
       :rows="rows"
       :columns="columns"
@@ -12,14 +12,14 @@
   </div>
 </template>
 <script>
-  import Columns from './Columns'
+  import ColumnsHeaders from './ColumnsHeaders'
   import Rows from './Rows'
 
   export default {
     name: 'Pane',
     props: ['position', 'columns', 'rows'],
     components: {
-      'Columns': Columns,
+      'ColumnsHeaders': ColumnsHeaders,
       'Rows': Rows
     },
     computed: {

@@ -7,7 +7,7 @@
 
 <script>
   export default {
-    name: 'column',
+    name: 'ColumnHeader',
     props: ['title', 'width'],
     data () {
       return {
@@ -30,6 +30,10 @@
     text-overflow: ellipsis;
     overflow: hidden;
     min-height: 18px;
+  }
+
+  .slick-column-name {
+    font-weight: bold;
   }
 
   .slick-header-column:first-child {
