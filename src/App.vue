@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <grid></grid>
+    <grid frozen-columns="3"></grid>
   </div>
 </template>
 
@@ -8,7 +8,7 @@
 import Grid from './components/Grid'
 
 export default {
-  name: 'app',
+  name: 'App',
   components: {
     Grid
   }

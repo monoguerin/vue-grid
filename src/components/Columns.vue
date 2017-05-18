@@ -1,15 +1,15 @@
 <template>
   <div class="slick-header" style="width: 200px;" :style="{ width: sumWidthCols}">
-      <column v-for="column in columns" :title="column.title" :width="column.width" :key="column.key"></column>
+      <Column v-for="column in columns" :title="column.title" :width="column.width" :key="column.key"></Column>
   </div>
 </template>
 
 <script>
   import Column from './Column'
   export default {
-    name: 'columns',
+    name: 'Columns',
     components: {
-      'column': Column
+      'Column': Column
     },
     props: ['columns'],
     computed: {
