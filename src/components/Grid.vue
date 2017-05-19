@@ -1,26 +1,26 @@
 <template>
   <div id="myGrid" class="grid-star">
     <div v-if="frozenColumns > 0" class="pane-container">
-      <Pane
+      <pane
         position="left"
         ref="left-pane"
         :columns="leftColumns"
         :rows="data"
         @paneScroll="paneScroll"
         @wheelPaneScroll="paneScroll">
-      </Pane><!--
-   --><Pane
+      </pane><!--
+   --><pane
         position="right"
         ref="right-pane"
-        :columns="columns"
+        :columns="rightColumns"
         :rows="data"
         @paneScroll="paneScroll"
         @wheelPaneScroll="paneScroll">
-      </Pane>
+      </pane>
     </div>
-    <div v-else>
-      <ColumnsHeaders :columns="columns"></ColumnsHeaders>
-      <Rows :rows="data" :columns="columns"></Rows>
+    <div v-else class="pane-container">
+      <columns-headers :columns="columns"></columns-headers>
+      <rows :rows="data" :columns="columns"></rows>
     </div>
   </div>
 </template>
@@ -43,9 +43,9 @@
   export default {
     name: 'Grid',
     components: {
-      'ColumnsHeaders': ColumnsHeaders,
-      'Rows': Rows,
-      'Pane': Pane
+      'columns-headers': ColumnsHeaders,
+      'rows': Rows,
+      'pane': Pane
     },
     props: ['frozenColumns'],
     data () {
@@ -56,14 +56,17 @@
     },
     computed: {
       leftColumns () {
-        return this.columns.splice(0, this.frozenColumns)
+        return this.columns.slice(0, this.frozenColumns)
+      },
+      rightColumns () {
+        return this.columns.slice(this.frozenColumns)
       }
     },
     methods: {
       paneScroll (paneComponent, evt) {
         const affectedPane = paneComponent.position
         let otherPaneComponent = this.$refs[getOtherPane(affectedPane)]
-        otherPaneComponent.$el.querySelector('.scroller').scrollTop = evt.target.scrollTop
+        otherPaneComponent.$el.querySelector('.scroller').scrollTop = evt.$el.scrollTop
       }
     }
   }
@@ -72,7 +75,7 @@
 <style>
   .grid-star {
     max-width: 800px;
-    height: 250px;
+    height: 500px;
     overflow: hidden;
     outline: 0px;
     position: relative;

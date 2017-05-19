@@ -8,7 +8,7 @@ export default [
   },
   {
     id: 'col-count',
-    width: 30,
+    width: 50,
     formatter (rowIndex) {
       return rowIndex + 1
     }

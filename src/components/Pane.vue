@@ -1,26 +1,21 @@
 <template>
   <div :class="positionClass" class="data-pane">
-    <ColumnsHeaders :columns="columns"></ColumnsHeaders>
-    <Rows 
-      :rows="rows"
-      :columns="columns"
-      :position="position"
-      :ref="positionClass"
-      :handle-scroll="paneScroll"
-      :handle-mouse-wheel="wheelPaneScroll">
-    </Rows>
+    <columns-headers :columns="columns"></columns-headers>
+    <rows :rows="rows" :columns="columns" :position="position" :paneScroll="paneScroll"></rows>
   </div>
 </template>
 <script>
-  import ColumnsHeaders from './ColumnsHeaders'
   import Rows from './Rows'
+  import ColumnsHeaders from './ColumnsHeaders'
+  import Row from './Row'
 
   export default {
     name: 'Pane',
     props: ['position', 'columns', 'rows'],
     components: {
-      'ColumnsHeaders': ColumnsHeaders,
-      'Rows': Rows
+      'columns-headers': ColumnsHeaders,
+      'row': Row,
+      'rows': Rows
     },
     computed: {
       positionClass () {
@@ -30,9 +25,6 @@
     methods: {
       paneScroll (evt) {
         this.$emit('paneScroll', this, evt)
-      },
-      wheelPaneScroll (evt) {
-        this.$emit('wheelPaneScroll', this, evt)
       }
     }
   }
@@ -46,6 +38,6 @@
   }
 
   .right-pane {
-    overflow-x: scroll;
+    overflow-x: auto;
   }
 </style>

@@ -7,7 +7,7 @@
 <script>
   import ColumnHeader from './ColumnHeader'
   export default {
-    name: 'ColumnsHeaders',
+    name: 'column-headers',
     components: {
       'ColumnHeader': ColumnHeader
     },

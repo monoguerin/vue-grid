@@ -10,7 +10,7 @@ import Grid from './components/Grid'
 export default {
   name: 'App',
   components: {
-    Grid
+    'grid': Grid
   }
 }
 </script>
