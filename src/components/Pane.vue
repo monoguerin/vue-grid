@@ -10,14 +10,15 @@
         :columns="columns"
         :col-width="colsWidth"
         :position="position"
-        :left-gap="leftGap">
+        :left-gap="leftGap"
+        :start-index="mainStartIndex">
       </rows>
     </div>
     <!-- frozen footer needed ? -->
   </div>
 </template>
 <script>
-  import Rows from './RowsSlick'
+  import Rows from './Rows'
 
   export default {
     name: 'Pane',
@@ -27,20 +28,30 @@
     },
     data () {
       return {
+        visibleItems: [],
         paneInlineStyles: {
           left: this.leftGap + 'px',
           width: this.colsWidth + 'px',
-          height: this.height + 'px'
+          // Substracting the headers Height
+          // TODO: Make this dynamic
+          height: (this.height - 38) + 'px'
         },
         headerColsStyles: {
           width: (1000 + this.colsWidth) + 'px'
         },
         viewportInlineStyles: {
-          width: (this.containerWidth - this.leftGap) + 'px',
-          height: this.height + 'px'
+          width: `${(this.containerWidth - this.leftGap) >= this.colsWidth ? this.colsWidth : (this.containerWidth - this.leftGap)}px`,
+          // Substracting the headers Height
+          // TODO: Make this dynamic
+          height: (this.height - 38) + 'px'
         },
         prevScrollTop: 0,
-        prevScrollLeft: 0
+        prevScrollLeft: 0,
+        poolSize: 1,
+        buffer: 2,
+        itemHeight: 28,
+        mainStartIndex: 0,
+        mainEndIndex: 0
       }
     },
     computed: {
@@ -52,24 +63,60 @@
       },
       canvasPosClass () {
         return `grid-canvas-${this.position}`
-      },
-      colWidths () {
-        let sumWidths = 0
-        this.columns.forEach(col => (sumWidths += col.width))
-        return sumWidths
       }
     },
     methods: {
+      getScroll () {
+        const el = this.$el.querySelector('.slick-viewport')
+        let scroll = {
+          top: el.scrollTop,
+          bottom: el.scrollTop + el.clientHeight
+        }
+
+        if (scroll.bottom >= 0 && scroll.top <= scroll.bottom) {
+          return scroll
+        } else {
+          return null
+        }
+      },
       paneScroll (evt) {
         this.$emit('paneScroll', this, evt)
       },
+      getScrollbar (element) {
+        return {
+          width: element.offsetWidth - element.clientWidth,
+          height: element.offsetHeight - element.clientHeight
+        }
+      },
+      updateVisibleItems () {
+        const scroll = this.getScroll()
+        const l = this.rows.length
+        if (scroll) {
+          let startIndex = Math.floor((Math.floor(scroll.top / this.itemHeight) - this.buffer) / this.poolSize) * this.poolSize
+          let endIndex = Math.floor((Math.ceil(scroll.bottom / this.itemHeight) + this.buffer) / this.poolSize) * this.poolSize
+          if (startIndex < 0) {
+            startIndex = 0
+          }
+          if (endIndex > l) {
+            endIndex = l
+          }
+          if (startIndex !== this.mainStartIndex || endIndex !== this.endIndex) {
+            this.keysEnabled = !(startIndex > this.mainEndIndex || endIndex < this.mainStartIndex)
+            this.mainStartIndex = startIndex
+            this.mainEndIndex = endIndex
+            this.visibleItems = this.rows.slice(startIndex, endIndex)
+            // this.itemContainerStyle.height = l * this.itemHeight + 'px'
+            // this.itemsStyle.marginTop = startIndex * this.itemHeight + 'px'
+          }
+        }
+      },
       handleScroll (evt) {
         let viewportElement = this.$el.querySelector('.slick-viewport')
+        let scrollBar = this.getScrollbar(viewportElement)
         let scrollTop = viewportElement.scrollTop
         let scrollLeft = viewportElement.scrollLeft
-        let maxScrollDistanceY = viewportElement.scrollHeight - viewportElement.clientHeight
-        // This is the scrollbar width check this later to get that dynamic
-        let maxScrollDistanceX = viewportElement.scrollWidth - viewportElement.clientWidth - 17
+        let maxScrollDistanceY = viewportElement.scrollHeight - viewportElement.clientHeight - scrollBar.height
+        let maxScrollDistanceX = viewportElement.scrollWidth - viewportElement.clientWidth - scrollBar.width
 
         // Ceiling the max scroll values
         if (scrollTop > maxScrollDistanceY) {
@@ -96,8 +143,16 @@
         if (vScrollDist) {
           this.prevScrollTop = scrollTop
           this.$emit('paneScroll', this, scrollTop)
+          // Shows different rows depending on the scroll
+          this.updateVisibleItems({
+            top: scrollTop
+          })
         }
       }
+    },
+
+    mounted () {
+      this.updateVisibleItems()
     }
   }
 </script>

@@ -26,7 +26,7 @@ export default {
 <style>
 #app {
   font-family: Helvetica, Arial, sans-serif;
-  width: 700px;
+  width: 900px;
   height: 400px;
 }
 </style>

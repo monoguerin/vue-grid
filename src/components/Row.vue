@@ -1,6 +1,6 @@
 <template>
   <div class="ui-widget-content slick-row" :class="oddOrEven" :style="inlineStyleRow">
-    <cell v-for="(col, colIndex) in columns" :key="colIndex + '_' + index" :column="col" :col-index="colIndex" :row="row" :row-index="index"></cell>
+    <cell v-for="(col, colIndex) in columns" :key="key" :column="col" :col-index="colIndex" :row="row" :row-index="index"></cell>
   </div>
 </template>
 
@@ -23,6 +23,9 @@
     computed: {
       oddOrEven () {
         return this.index % 2 === 0 ? 'odd' : 'even'
+      },
+      key () {
+        return `${this.row.id}_${this.colIndex}`
       }
     }
   }

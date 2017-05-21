@@ -39,7 +39,6 @@
       </pane>
     </div>
     <div v-else class="pane-container">
-      <columns-headers :columns="columns"></columns-headers>
       <rows :rows="data" :columns="columns"></rows>
     </div>
   </div>
@@ -48,7 +47,7 @@
 <script>
   import PaneHeaders from './PaneHeaders'
   import Pane from './Pane'
-  import ColumnsHeaders from './ColumnsHeaders'
+  // import ColumnsHeaders from './ColumnsHeaders'
   import Rows from './Rows'
   import data from './config/data'
   import columns from './config/columns'
@@ -64,7 +63,6 @@
   export default {
     name: 'Grid',
     components: {
-      'columns-headers': ColumnsHeaders,
       'rows': Rows,
       'pane-headers': PaneHeaders,
       'pane': Pane
@@ -111,8 +109,8 @@
 
 <style>
   .grid-star {
-    max-width: 800px;
-    height: 500px;
+    height: 100%;
+    width: 100%;
     overflow: hidden;
     outline: 0px;
     position: relative;
