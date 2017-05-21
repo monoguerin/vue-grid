@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <grid frozen-columns="3"></grid>
+    <grid frozen-columns="3" :container-width="containerWidth" :container-height="containerHeight"></grid>
   </div>
 </template>
 
@@ -11,6 +11,14 @@ export default {
   name: 'App',
   components: {
     'grid': Grid
+  },
+  computed: {
+    containerWidth () {
+      return this.$parent.$el.offsetWidth
+    },
+    containerHeight () {
+      return this.$parent.$el.offsetHeight
+    }
   }
 }
 </script>
@@ -18,5 +26,7 @@ export default {
 <style>
 #app {
   font-family: Helvetica, Arial, sans-serif;
+  width: 700px;
+  height: 400px;
 }
 </style>

@@ -4,6 +4,9 @@ export default [
     width: 30,
     formatter () {
       return `<input type="checkbox">`
+    },
+    headerFormatter () {
+      return `<input type="checkbox">`
     }
   },
   {
@@ -46,6 +49,30 @@ export default [
   {
     id: 6,
     title: 'Column6',
+    width: 85,
+    field: 'column-6'
+  },
+  {
+    id: 7,
+    title: 'Column7',
+    width: 85,
+    field: 'column-6'
+  },
+  {
+    id: 8,
+    title: 'Column 8 long long long text header',
+    width: 85,
+    field: 'column-6'
+  },
+  {
+    id: 9,
+    title: 'Column 9',
+    width: 85,
+    field: 'column-6'
+  },
+  {
+    id: 10,
+    title: 'Column 10',
     width: 85,
     field: 'column-6'
   }

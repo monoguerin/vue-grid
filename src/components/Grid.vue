@@ -1,21 +1,41 @@
 <template>
   <div id="myGrid" class="grid-star">
     <div v-if="frozenColumns > 0" class="pane-container">
+      <pane-headers
+        position="left"
+        ref="left-pane-headers"
+        :columns="leftColumns"
+        :cols-width="getLeftWidth()"
+        :height="containerHeight">
+      </pane-headers><!--
+   --><pane-headers
+        position="right"
+        ref="right-pane-headers"
+        :columns="rightColumns"
+        :cols-width="getRigthWidth()"
+        :left-gap="getLeftWidth()"
+        :container-width="containerWidth"
+        :height="containerHeight">
+      </pane-headers>
       <pane
         position="left"
         ref="left-pane"
         :columns="leftColumns"
         :rows="data"
-        @paneScroll="paneScroll"
-        @wheelPaneScroll="paneScroll">
+        :cols-width="getLeftWidth()"
+        :height="containerHeight">
       </pane><!--
    --><pane
         position="right"
         ref="right-pane"
         :columns="rightColumns"
         :rows="data"
+        :cols-width="getRigthWidth()"
+        :left-gap="getLeftWidth()"
+        :height="containerHeight"
+        :container-width="containerWidth"
         @paneScroll="paneScroll"
-        @wheelPaneScroll="paneScroll">
+        @horizontalPaneScroll="handleHorizontal">
       </pane>
     </div>
     <div v-else class="pane-container">
@@ -26,9 +46,10 @@
 </template>
 
 <script>
+  import PaneHeaders from './PaneHeaders'
+  import Pane from './Pane'
   import ColumnsHeaders from './ColumnsHeaders'
   import Rows from './Rows'
-  import Pane from './Pane'
   import data from './config/data'
   import columns from './config/columns'
 
@@ -45,13 +66,15 @@
     components: {
       'columns-headers': ColumnsHeaders,
       'rows': Rows,
+      'pane-headers': PaneHeaders,
       'pane': Pane
     },
-    props: ['frozenColumns'],
+    props: ['frozenColumns', 'containerWidth', 'containerHeight'],
     data () {
       return {
         data,
-        columns
+        columns,
+        height: 0
       }
     },
     computed: {
@@ -63,10 +86,24 @@
       }
     },
     methods: {
-      paneScroll (paneComponent, evt) {
+      getLeftWidth () {
+        let sumWidths = 0
+        this.leftColumns.forEach(col => (sumWidths += col.width))
+        return sumWidths
+      },
+      getRigthWidth () {
+        let sumWidths = 0
+        this.rightColumns.forEach(col => (sumWidths += col.width))
+        return sumWidths
+      },
+      paneScroll (paneComponent, scrollTop) {
         const affectedPane = paneComponent.position
         let otherPaneComponent = this.$refs[getOtherPane(affectedPane)]
-        otherPaneComponent.$el.querySelector('.scroller').scrollTop = evt.$el.scrollTop
+        otherPaneComponent.$el.querySelector('.slick-viewport').scrollTop = scrollTop
+      },
+      handleHorizontal (scrollTarget, scrollLeft) {
+        const rightHeadersComponet = this.$refs['right-pane-headers']
+        rightHeadersComponet.$el.querySelector('.slick-header').scrollLeft = scrollLeft
       }
     }
   }

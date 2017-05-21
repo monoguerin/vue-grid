@@ -23,7 +23,7 @@
         if (this.column.formatter && typeof this.column.formatter === 'function') {
           value = this.column.formatter(this.rowIndex, this.colIndex, value, this.column)
         }
-        return value
+        return value || '-'
       }
     }
   }
@@ -35,7 +35,6 @@
     vertical-align: top;
     padding-left: 6px;
     padding-right: 6px;
-    margin-left: 10px;
     box-sizing: border-box;
     text-overflow: ellipsis;
     overflow: hidden;

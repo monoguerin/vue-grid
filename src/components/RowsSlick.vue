@@ -1,17 +1,12 @@
 <template>
-  <div class="scroller virtual-scroller" @scroll="updateVisibleItems" @mouseWheel="updateVisibleItems" v-observe-visibility="handleVisibilityChange">
-    <div class="grid-canvas rows-container" :style="itemContainerStyle">
-      <div class="rows" :style="itemsStyle">
-        <row v-for="(row, index) in visibleItems" :key="index" :index="_startIndex + index" :row="row" :columns="columns"></row>
-      </div>
-    </div>
-    <resize-observer @notify="updateVisibleItems" />
+  <div class="grid-canvas" :class="canvasPosClass" tabindex="0" hidefocus="" :style="itemContainerStyle">
+    <row v-for="(row, index) in visibleItems" :key="index" :index="_startIndex + index" :row="row" :columns="columns"></row>
   </div>
 </template>
 
 <script>
   import ResizeObserver from 'vue-resize/src/components/ResizeObserver'
-  import Row from './Row'
+  import Row from './RowSlick'
 
   export default {
     name: 'Rows',
@@ -30,7 +25,11 @@
         type: Array,
         required: true
       },
-      colWidths: {
+      colWidth: {
+        type: Number,
+        default: 0
+      },
+      leftGap: {
         type: Number,
         default: 0
       },
@@ -51,12 +50,24 @@
     data () {
       return {
         visibleItems: [],
-        itemContainerStyle: null,
+        itemContainerStyle: {
+          width: this.colWidth + 'px'
+        },
         itemsStyle: {
-          'width': this.colWidths + 'px'
+          width: this.colWidth + 'px'
+        },
+        inlineStylesScroller: {
+          width: this.colWidth + 'px',
+          left: this.leftGap + 'px'
         },
         keysEnabled: true,
         itemHeight: 28
+      }
+    },
+
+    computed: {
+      canvasPosClass () {
+        return `grid-canvas-${this.position}`
       }
     },
 
@@ -116,9 +127,7 @@
             this._startIndex = startIndex
             this._endIndex = endIndex
             this.visibleItems = this.rows.slice(startIndex, endIndex)
-            this.itemContainerStyle = {
-              height: l * this.itemHeight + 'px'
-            }
+            this.itemContainerStyle.height = l * this.itemHeight + 'px'
             this.itemsStyle.marginTop = startIndex * this.itemHeight + 'px'
           }
         }
@@ -171,6 +180,11 @@
 </script>
 
 <style>
+  .grid-canvas {
+    position: relative;
+    outline: 0;
+  }
+
   .scroller.virtual-scroller {
     height: 100%;
     overflow-y: auto;

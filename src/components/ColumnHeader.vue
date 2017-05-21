@@ -25,7 +25,6 @@
     vertical-align: top;
     padding-left: 6px;
     padding-right: 6px;
-    margin-left: 10px;
     box-sizing: border-box;
     text-overflow: ellipsis;
     overflow: hidden;
