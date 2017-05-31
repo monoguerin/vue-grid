@@ -9,7 +9,7 @@
 
   export default {
     name: 'headers',
-    props: ['columns', 'position', 'colsWidth'],
+    props: ['position', 'colsWidth', 'columns'],
     components: {
       'header-single': Header
     },

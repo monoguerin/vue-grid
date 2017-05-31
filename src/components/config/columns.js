@@ -1,6 +1,7 @@
 export default [
   {
     id: 0,
+    field: '__checkbox',
     width: 30,
     formatter () {
       return `<input type="checkbox">`
@@ -19,20 +20,25 @@ export default [
   {
     id: 1,
     title: 'Column1',
-    width: 85,
+    width: 200,
     field: 'column-1'
   },
   {
     id: 2,
     title: 'Column2',
     width: 85,
-    field: 'column-2'
+    field: 'column-2',
+    formatter (row, col, value) {
+      return `<div class="red-bg">${value}</div>`
+    }
   },
   {
     id: 3,
     title: 'Column3',
     width: 85,
-    field: 'column-3'
+    field: 'column-3',
+    headerCssClass: 'text-right text-chocolate',
+    cssClass: 'text-right text-blue'
   },
   {
     id: 4,
@@ -56,24 +62,24 @@ export default [
     id: 7,
     title: 'Column7',
     width: 85,
-    field: 'column-6'
+    field: 'column-7'
   },
   {
     id: 8,
     title: 'Column 8 long long long text header',
     width: 85,
-    field: 'column-6'
+    field: 'column-8'
   },
   {
     id: 9,
     title: 'Column 9',
     width: 85,
-    field: 'column-6'
+    field: 'column-9'
   },
   {
     id: 10,
     title: 'Column 10',
     width: 85,
-    field: 'column-6'
+    field: 'column-10'
   }
 ]

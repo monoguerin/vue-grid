@@ -1,21 +1,43 @@
 <template>
-  <div class="slick-header-column col slick-header-sortable" :style="{ width: col.width + 'px' }">
+  <div class="slick-header-column col slick-header-sortable"
+    :class="[col.headerCssClass, sorted]"
+    :style="{ width: col.width + 'px' }"
+    @click="sortColumn(col)">
     <span class="slick-column-name" v-html="titleValue(col)"></span>
-    <span class="slick-sort-indicator"></span>
+    <span class="slick-sort-line"></span>
+    <span class="slick-sort-indicator" :class="sortAscend"></span>
     <div class="slick-resizable-handle"></div>
   </div>
 </template>
 
 <script>
-  export default {
-    name: 'header-single',
-    props: ['col'],
-    methods: {
-      titleValue (col) {
-        return col.headerFormatter ? col.headerFormatter(col.title) : col.title
+import { mapActions } from 'vuex'
+
+export default {
+  name: 'header-single',
+  props: ['col'],
+  computed: {
+    sortAscend () {
+      return {
+        'sort-ascend': this.$store.state.sortBy === this.col.field && this.$store.state.sortAscend,
+        'sort-descend': this.$store.state.sortBy === this.col.field && !this.$store.state.sortAscend
+      }
+    },
+    sorted () {
+      return {
+        'sorted': this.$store.state.sortBy === this.col.field
       }
     }
+  },
+  methods: {
+    ...mapActions([
+      'sortColumn'
+    ]),
+    titleValue (col) {
+      return col.headerFormatter ? col.headerFormatter(col.title) : col.title
+    }
   }
+}
 </script>
 
 <style>
@@ -38,6 +60,23 @@
     box-sizing: border-box;
     overflow: hidden;
     min-height: 18px;
+    cursor: pointer;
+  }
+
+  .slick-header-column.sorted .slick-sort-line {
+    position: absolute;
+    width: 100%;
+    border-bottom: 1px solid black;
+    top: 23px;
+    left: 0;
+    margin: 0 6px;
+  }
+
+  .slick-header-column .slick-column-name {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 
   .slick-sort-indicator {
@@ -45,16 +84,34 @@
     font-size: 15px;
     margin: 0;
     height: 0;
-    display: inline-block;
-    width: 8px;
-    font-family: "mui-font";
-    speak: none;
-    font-style: normal;
-    font-weight: 400;
-    font-variant: normal;
-    text-transform: none;
+    display: block;
     line-height: 1;
-    -webkit-font-smoothing: antialiased;
+    left: 5px;
+    bottom: 15px;
+  }
+
+  .slick-sort-indicator.sort-ascend{
+    bottom: 19px;
+  }
+
+  .slick-sort-indicator.sort-ascend:after {
+    width: 0; 
+    height: 0; 
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid black;
+    content: '';
+    display: block;
+  }
+
+  .slick-sort-indicator.sort-descend:after {
+    width: 0; 
+    height: 0; 
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid black;
+    content: '';
+    display: block;
   }
 
   .slick-resizable-handle {

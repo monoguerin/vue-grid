@@ -1,34 +1,55 @@
 <template>
-  <div class="ui-widget-content slick-row" :class="oddOrEven" :style="inlineStyleRow">
+  <div
+    class="ui-widget-content slick-row"
+    :class="[oddOrEven, hoverClass, selectedClass]"
+    :data-slick-row="index"
+    :style="inlineStyleRow"
+    @mouseenter="changeActiveRow(index)"
+    @mouseleave="resetActiveRow">
     <cell v-for="(col, colIndex) in columns" :key="key" :column="col" :col-index="colIndex" :row="row" :row-index="index"></cell>
   </div>
 </template>
 
 <script>
-  import Cell from './Cell'
+import { mapActions } from 'vuex'
+import Cell from './Cell'
 
-  export default {
-    name: 'row',
-    props: ['row', 'columns', 'index'],
-    components: {
-      'cell': Cell
-    },
-    data () {
+export default {
+  name: 'row',
+  props: ['row', 'columns', 'index', 'startIndex'],
+  components: {
+    'cell': Cell
+  },
+  computed: {
+    inlineStyleRow () {
       return {
-        inlineStyleRow: {
-          top: (this.index * 27) + 'px'
-        }
+        top: (this.index * this.$store.state.itemHeight) + 'px'
       }
     },
-    computed: {
-      oddOrEven () {
-        return this.index % 2 === 0 ? 'odd' : 'even'
-      },
-      key () {
-        return `${this.row.id}_${this.colIndex}`
+    hoverClass () {
+      return {
+        'hover': this.index === this.$store.state.activeRow
       }
+    },
+    oddOrEven () {
+      return this.index % 2 === 0 ? 'odd' : 'even'
+    },
+    selectedClass () {
+      return {
+        'selected': this.$store.state.selectedRows.filter(row => row === this.row.id).length > 0
+      }
+    },
+    key () {
+      return `${this.row.id}_${this.colIndex}`
     }
+  },
+  methods: {
+    ...mapActions([
+      'changeActiveRow',
+      'resetActiveRow'
+    ])
   }
+}
 </script>
 
 <style>
@@ -41,6 +62,14 @@
     font-weight: 400;
     color: #151515;
     line-height: 27px;
+  }
+
+  .slick-row.selected {
+    background-color: #ccc;
+  }
+
+  .slick-row.hover {
+    background-color: #aaa;
   }
 
   .slick-row:after {

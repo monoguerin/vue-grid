@@ -4,7 +4,8 @@
       <col-headers
         :columns="columns"
         :position="position"
-        :cols-width="colsWidth">
+        :cols-width="colsWidth"
+        @clickHeader="handleClickHeader">
       </col-headers>
     </div>
   </div>
@@ -32,6 +33,11 @@
       },
       headerPosClass () {
         return `slick-header-${this.position}`
+      }
+    },
+    methods: {
+      handleClickHeader (col, event) {
+        this.$emit('sort', col, event)
       }
     }
   }

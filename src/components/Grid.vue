@@ -1,110 +1,151 @@
 <template>
   <div id="myGrid" class="grid-star">
-    <div v-if="frozenColumns > 0" class="pane-container">
+    <div class="pane-container">
       <pane-headers
         position="left"
         ref="left-pane-headers"
         :columns="leftColumns"
-        :cols-width="getLeftWidth()"
-        :height="containerHeight">
+        :cols-width="leftColsWidth"
+        :container-height="containerHeight">
       </pane-headers><!--
    --><pane-headers
         position="right"
         ref="right-pane-headers"
         :columns="rightColumns"
-        :cols-width="getRigthWidth()"
-        :left-gap="getLeftWidth()"
+        :cols-width="rightColsWidth"
+        :left-gap="leftColsWidth"
         :container-width="containerWidth"
-        :height="containerHeight">
+        :container-height="containerHeight">
       </pane-headers>
       <pane
         position="left"
         ref="left-pane"
         :columns="leftColumns"
-        :rows="data"
-        :cols-width="getLeftWidth()"
-        :height="containerHeight">
+        :rows="items"
+        :container-height="containerHeight"
+        :cols-width="leftColsWidth"
+        :start-index="startIndex"
+        :viewport-height="viewportHeight"
+        @paneScroll="paneScroll"
+        @horizontalPaneScroll="handleHorizontal">
       </pane><!--
    --><pane
         position="right"
         ref="right-pane"
         :columns="rightColumns"
-        :rows="data"
-        :cols-width="getRigthWidth()"
-        :left-gap="getLeftWidth()"
-        :height="containerHeight"
+        :rows="items"
+        :cols-width="rightColsWidth"
+        :left-gap="leftColsWidth"
+        :container-height="containerHeight"
         :container-width="containerWidth"
+        :start-index="startIndex"
+        :viewport-height="viewportHeight"
         @paneScroll="paneScroll"
         @horizontalPaneScroll="handleHorizontal">
       </pane>
-    </div>
-    <div v-else class="pane-container">
-      <rows :rows="data" :columns="columns"></rows>
     </div>
   </div>
 </template>
 
 <script>
-  import PaneHeaders from './PaneHeaders'
-  import Pane from './Pane'
-  // import ColumnsHeaders from './ColumnsHeaders'
-  import Rows from './Rows'
-  import data from './config/data'
-  import columns from './config/columns'
+import { mapGetters } from 'vuex'
+import PaneHeaders from './PaneHeaders'
+import Pane from './Pane'
+import { throttle, getOtherPane } from './util/utils'
 
-  function getOtherPane (currentPane) {
-    let otherPane = 'left'
-    if (otherPane === currentPane) {
-      otherPane = 'right'
+let timeOutFn
+
+export default {
+  name: 'Grid',
+  components: {
+    'pane-headers': PaneHeaders,
+    'pane': Pane
+  },
+
+  data () {
+    return {
+      items: [],
+      startIndex: 0,
+      endIndex: 0,
+      canvasStyle: {},
+      poolSize: 1,
+      buffer: 10
     }
-    return `${otherPane}-pane`
-  }
+  },
 
-  export default {
-    name: 'Grid',
-    components: {
-      'rows': Rows,
-      'pane-headers': PaneHeaders,
-      'pane': Pane
-    },
-    props: ['frozenColumns', 'containerWidth', 'containerHeight'],
-    data () {
-      return {
-        data,
-        columns,
-        height: 0
-      }
-    },
-    computed: {
-      leftColumns () {
-        return this.columns.slice(0, this.frozenColumns)
-      },
-      rightColumns () {
-        return this.columns.slice(this.frozenColumns)
-      }
-    },
-    methods: {
-      getLeftWidth () {
-        let sumWidths = 0
-        this.leftColumns.forEach(col => (sumWidths += col.width))
-        return sumWidths
-      },
-      getRigthWidth () {
-        let sumWidths = 0
-        this.rightColumns.forEach(col => (sumWidths += col.width))
-        return sumWidths
-      },
-      paneScroll (paneComponent, scrollTop) {
+  computed: {
+    ...mapGetters([
+      'containerWidth',
+      'containerHeight',
+      'rows',
+      'leftColumns',
+      'leftColsWidth',
+      'rightColumns',
+      'rightColsWidth',
+      'itemHeight',
+      'viewportHeight'
+    ])
+  },
+
+  methods: {
+    paneScroll (paneComponent, scrollTop, scrollBottom) {
+      // Remove active class
+      this.$store.dispatch('resetActiveRow')
+
+      // Check for visible items
+      this.$nextTick(() => {
         const affectedPane = paneComponent.position
         let otherPaneComponent = this.$refs[getOtherPane(affectedPane)]
-        otherPaneComponent.$el.querySelector('.slick-viewport').scrollTop = scrollTop
-      },
-      handleHorizontal (scrollTarget, scrollLeft) {
-        const rightHeadersComponet = this.$refs['right-pane-headers']
-        rightHeadersComponet.$el.querySelector('.slick-header').scrollLeft = scrollLeft
+        this.$set(otherPaneComponent.$el.querySelector('.slick-viewport'), 'scrollTop', scrollTop)
+        throttle(this.visibleItems, timeOutFn, [false, scrollTop, scrollBottom])
+      })
+    },
+    visibleItems (sortingCall = false, scrollTop, scrollBottom) {
+      if (scrollTop === undefined || scrollBottom === undefined) {
+        const componentViewport = this.$refs['left-pane'].$el.querySelector('.slick-viewport')
+        scrollTop = componentViewport.scrollTop
+        scrollBottom = componentViewport.scrollTop + this.containerHeight
       }
+
+      const scroll = {
+        top: scrollTop,
+        bottom: scrollBottom
+      }
+      const dataLength = this.rows.length
+      if (scroll) {
+        let startIndex = Math.floor((Math.floor(scroll.top / this.itemHeight) - this.buffer) / this.poolSize) * this.poolSize
+        let endIndex = Math.floor((Math.ceil(scroll.bottom / this.itemHeight) + this.buffer) / this.poolSize) * this.poolSize
+
+        if (startIndex < 0) {
+          startIndex = 0
+        }
+        if (endIndex > dataLength) {
+          endIndex = dataLength
+        }
+
+        if (startIndex !== this.startIndex || endIndex !== this.endIndex || sortingCall) {
+          this.startIndex = startIndex
+          this.endIndex = endIndex
+          this.items = this.rows.slice(startIndex, endIndex)
+        }
+      }
+    },
+    handleHorizontal (scrollTarget, scrollLeft) {
+      const rightHeadersComponet = this.$refs['right-pane-headers']
+      rightHeadersComponet.$el.querySelector('.slick-header').scrollLeft = scrollLeft
     }
+  },
+
+  watch: {
+    rows () {
+      this.visibleItems(true)
+    }
+  },
+
+  mounted () {
+    this.visibleItems()
   }
+}
 </script>
 
 <style>
