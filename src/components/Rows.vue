@@ -11,6 +11,7 @@
 </template>
 
 <script>
+import { addPx } from './util/utils'
 import Row from './Row'
 
 export default {
@@ -48,20 +49,20 @@ export default {
   data () {
     return {
       itemContainerStyle: {
-        width: this.colWidth + 'px',
-        height: this.viewportHeight + 'px',
-        marginTop: this.startIndex * 28 + 'px'
+        width: addPx(this.colWidth),
+        height: addPx(this.viewportHeight),
+        marginTop: addPx(this.startIndex * this.$store.state.itemHeight)
       },
       itemsStyle: {
-        width: this.colWidth + 'px'
+        width: addPx(this.colWidth)
       }
     }
   },
   computed: {
     inlineStylesScroller () {
       return {
-        width: this.colWidth + 'px',
-        left: this.$store.state.leftColsWidth + 'px'
+        width: addPx(this.colWidth),
+        left: addPx(this.$store.state.leftColsWidth)
       }
     },
     rowIndex () {

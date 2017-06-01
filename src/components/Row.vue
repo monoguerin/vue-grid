@@ -12,6 +12,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import { addPx } from './util/utils'
 import Cell from './Cell'
 
 export default {
@@ -23,7 +24,7 @@ export default {
   computed: {
     inlineStyleRow () {
       return {
-        top: (this.index * this.$store.state.itemHeight) + 'px'
+        top: addPx(this.index * this.$store.state.itemHeight)
       }
     },
     hoverClass () {

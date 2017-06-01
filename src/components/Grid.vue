@@ -26,7 +26,7 @@
         :cols-width="leftColsWidth"
         :start-index="startIndex"
         :viewport-height="viewportHeight"
-        @paneScroll="paneScroll"
+        @verticalPaneScroll="verticalPaneScroll"
         @horizontalPaneScroll="handleHorizontal">
       </pane><!--
    --><pane
@@ -40,7 +40,7 @@
         :container-width="containerWidth"
         :start-index="startIndex"
         :viewport-height="viewportHeight"
-        @paneScroll="paneScroll"
+        @verticalPaneScroll="verticalPaneScroll"
         @horizontalPaneScroll="handleHorizontal">
       </pane>
     </div>
@@ -51,9 +51,8 @@
 import { mapGetters } from 'vuex'
 import PaneHeaders from './PaneHeaders'
 import Pane from './Pane'
-import { throttle, getOtherPane } from './util/utils'
-
-let timeOutFn
+import { getOtherPane } from './util/utils'
+import { throttle } from 'lodash'
 
 export default {
   name: 'Grid',
@@ -69,7 +68,8 @@ export default {
       endIndex: 0,
       canvasStyle: {},
       poolSize: 1,
-      buffer: 10
+      buffer: 10,
+      throttleVisible: null
     }
   },
 
@@ -88,16 +88,16 @@ export default {
   },
 
   methods: {
-    paneScroll (paneComponent, scrollTop, scrollBottom) {
+    verticalPaneScroll (paneComponent, scrollTop, scrollBottom) {
       // Remove active class
       this.$store.dispatch('resetActiveRow')
+      const affectedPane = paneComponent.position
+      let otherPaneComponent = this.$refs[getOtherPane(affectedPane)]
+      this.$set(otherPaneComponent.$el.querySelector('.slick-viewport'), 'scrollTop', scrollTop)
 
       // Check for visible items
       this.$nextTick(() => {
-        const affectedPane = paneComponent.position
-        let otherPaneComponent = this.$refs[getOtherPane(affectedPane)]
-        this.$set(otherPaneComponent.$el.querySelector('.slick-viewport'), 'scrollTop', scrollTop)
-        throttle(this.visibleItems, timeOutFn, [false, scrollTop, scrollBottom])
+        this.throttleVisible(false, scrollTop, scrollBottom)
       })
     },
     visibleItems (sortingCall = false, scrollTop, scrollBottom) {
@@ -143,6 +143,7 @@ export default {
   },
 
   mounted () {
+    this.throttleVisible = throttle(this.visibleItems, 100)
     this.visibleItems()
   }
 }

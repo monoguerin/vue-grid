@@ -11,36 +11,32 @@
   </div>
 </template>
 <script>
-  import Headers from './Headers'
+import { addPx } from './util/utils'
+import Headers from './Headers'
 
-  export default {
-    name: 'Pane',
-    props: ['position', 'columns', 'leftGap', 'colsWidth', 'containerWidth'],
-    components: {
-      'col-headers': Headers
-    },
-    data () {
-      return {
-        paneInlineStyles: {
-          left: this.leftGap + 'px',
-          width: this.containerWidth - this.leftGap + 'px'
-        }
-      }
-    },
-    computed: {
-      positionClass () {
-        return `slick-pane-${this.position}`
-      },
-      headerPosClass () {
-        return `slick-header-${this.position}`
-      }
-    },
-    methods: {
-      handleClickHeader (col, event) {
-        this.$emit('sort', col, event)
+export default {
+  name: 'Pane',
+  props: ['position', 'columns', 'leftGap', 'colsWidth', 'containerWidth'],
+  components: {
+    'col-headers': Headers
+  },
+  data () {
+    return {
+      paneInlineStyles: {
+        left: addPx(this.leftGap),
+        width: addPx(this.containerWidth - this.leftGap)
       }
     }
+  },
+  computed: {
+    positionClass () {
+      return `slick-pane-${this.position}`
+    },
+    headerPosClass () {
+      return `slick-header-${this.position}`
+    }
   }
+}
 </script>
 
 <style>

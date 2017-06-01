@@ -4,7 +4,7 @@
     <div class="ui-state-default slick-top-panel-scroller" style="display: none;">
       <div class="slick-top-panel" style="width:10000px"></div>
     </div>
-    <div class="slick-viewport" :class="viewportPosClass" :style="viewportInlineStyles" @mouseWheel="handleMouseWheel" @scroll.prevent="handleScroll" tabindex="0" hidefocus="">
+    <div class="slick-viewport" :class="viewportPosClass" :style="viewportInlineStyles" @mouseWheel="monohandleMouseWheel" @scroll.prevent="handleScroll" tabindex="0" hidefocus="">
       <rows
         :rows="rows"
         :columns="columns"
@@ -19,7 +19,10 @@
   </div>
 </template>
 <script>
+import { addPx } from './util/utils'
 import Rows from './Rows'
+
+const scrollViewportSelector = '.slick-viewport'
 
 export default {
   name: 'Pane',
@@ -30,20 +33,20 @@ export default {
   data () {
     return {
       paneInlineStyles: {
-        left: this.leftGap + 'px',
-        width: this.colsWidth + 'px',
+        left: addPx(this.leftGap),
+        width: addPx(this.colsWidth),
         // Substracting the headers Height
         // TODO: Make this dynamic
-        height: (this.containerHeight - 38) + 'px'
+        height: addPx(this.containerHeight - 38)
       },
       headerColsStyles: {
-        width: (1000 + this.colsWidth) + 'px'
+        width: addPx(1000 + this.colsWidth)
       },
       viewportInlineStyles: {
-        width: `${(this.containerWidth - this.leftGap) >= this.colsWidth ? this.colsWidth : (this.containerWidth - this.leftGap)}px`,
+        width: addPx((this.containerWidth - this.leftGap) >= this.colsWidth ? this.colsWidth : (this.containerWidth - this.leftGap)),
         // Substracting the headers Height
         // TODO: Make this dynamic
-        height: (this.containerHeight - 38) + 'px'
+        height: addPx(this.containerHeight - 38)
       },
       prevScrollTop: 0,
       prevScrollLeft: 0
@@ -62,7 +65,7 @@ export default {
   },
   methods: {
     getScroll () {
-      const el = this.$el.querySelector('.slick-viewport')
+      const el = this.$el.querySelector(scrollViewportSelector)
       let scroll = {
         top: el.scrollTop,
         bottom: el.scrollTop + el.clientHeight
@@ -81,13 +84,13 @@ export default {
       }
     },
     handleMouseWheel (evt) {
-      const viewportElement = this.$el.querySelector('.slick-viewport')
+      const viewportElement = this.$el.querySelector(scrollViewportSelector)
       const scrollTop = Math.max(0, viewportElement.scrollTop - evt.deltaY)
       const scrollLeft = viewportElement.scrollLeft + evt.deltaX
       this.handleScroll(evt, scrollTop, scrollLeft, true)
     },
     handleScroll (evt, scrollTop = false, scrollLeft = false, isMouseWheel) {
-      const viewportElement = this.$el.querySelector('.slick-viewport')
+      const viewportElement = this.$el.querySelector(scrollViewportSelector)
       const scrollBar = this.getScrollbar(viewportElement)
       const maxScrollDistanceY = viewportElement.scrollHeight - viewportElement.clientHeight - scrollBar.height
       const maxScrollDistanceX = viewportElement.scrollWidth - viewportElement.clientWidth - scrollBar.width
@@ -123,7 +126,7 @@ export default {
         }
 
         this.prevScrollTop = scrollTop
-        this.$emit('paneScroll', this, scrollTop, scrollBottom)
+        this.$emit('verticalPaneScroll', this, scrollTop, scrollBottom)
       }
     }
   }
