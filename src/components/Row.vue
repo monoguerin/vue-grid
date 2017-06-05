@@ -49,6 +49,11 @@ export default {
       'changeActiveRow',
       'resetActiveRow'
     ])
+  },
+  watch: {
+    columns () {
+      console.log('columns CHANGED')
+    }
   }
 }
 </script>

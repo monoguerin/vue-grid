@@ -40,6 +40,11 @@ export default {
         this.$store.dispatch('selectRow', this.rowIndex)
       }
     }
+  },
+  watch: {
+    column () {
+      console.log('colu')
+    }
   }
 }
 </script>

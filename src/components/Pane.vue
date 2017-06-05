@@ -4,7 +4,7 @@
     <div class="ui-state-default slick-top-panel-scroller" style="display: none;">
       <div class="slick-top-panel" style="width:10000px"></div>
     </div>
-    <div class="slick-viewport" :class="viewportPosClass" :style="viewportInlineStyles" @mouseWheel="monohandleMouseWheel" @scroll.prevent="handleScroll" tabindex="0" hidefocus="">
+    <div class="slick-viewport" :class="viewportPosClass" :style="viewportInlineStyles" @mouseWheel="handleMouseWheel" @scroll.prevent="handleScroll" tabindex="0" hidefocus="">
       <rows
         :rows="rows"
         :columns="columns"

@@ -4,8 +4,7 @@
       <col-headers
         :columns="columns"
         :position="position"
-        :cols-width="colsWidth"
-        @clickHeader="handleClickHeader">
+        :cols-width="colsWidth">
       </col-headers>
     </div>
   </div>

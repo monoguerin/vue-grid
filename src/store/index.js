@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { findIndex } from 'lodash'
 
 Vue.use(Vuex)
 
@@ -16,7 +17,8 @@ const DEFAULTS = {
   itemHeight: 28,
   leftColsWidth: 0,
   rightColsWidth: 0,
-  viewportHeight: 200
+  viewportHeight: 200,
+  headersHeight: 60
 }
 
 export const store = new Vuex.Store({
@@ -36,7 +38,8 @@ export const store = new Vuex.Store({
     containerHeight: DEFAULTS.containerHeight,
     itemHeight: DEFAULTS.itemHeight,
     activeRow: false,
-    viewportHeight: DEFAULTS.viewportHeight
+    viewportHeight: DEFAULTS.viewportHeight,
+    headersHeight: DEFAULTS.headersHeight
   },
   getters: {
     frozenColumns (state) {
@@ -115,6 +118,9 @@ export const store = new Vuex.Store({
       state.rightColumns = state.columns.slice(state.frozenColumns)
       state.rightColsWidth = sumColsWidths(state.rightColumns)
     },
+    updateColWidth (state, { colIndex, width }) {
+      Vue.set(state.columns[colIndex], 'width', width)
+    },
     setActiveRow (state, row) {
       state.activeRow = row
     },
@@ -169,6 +175,11 @@ export const store = new Vuex.Store({
     },
     selectRow ({ commit }, rowIndex) {
       commit('setSelectedRow', rowIndex)
+    },
+    changeColWidth ({ commit, state }, { col, width }) {
+      const colIndex = findIndex(state.columns, {id: col.id})
+      commit('updateColWidth', { colIndex, width })
+      commit('setColumns', state.columns)
     }
   }
 })

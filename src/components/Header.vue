@@ -2,11 +2,13 @@
   <div class="slick-header-column col slick-header-sortable"
     :class="[col.headerCssClass, sorted]"
     :style="{ width: col.width + 'px' }"
-    @click="sortColumn(col)">
+    @click="sortColumnResize(col)">
     <span class="slick-column-name" v-html="titleValue(col)"></span>
     <span class="slick-sort-line"></span>
     <span class="slick-sort-indicator" :class="sortAscend"></span>
-    <div class="slick-resizable-handle"></div>
+    <div
+      class="slick-resizable-handle"
+      @mousedown.prevent="dragStart"></div>
   </div>
 </template>
 
@@ -16,6 +18,13 @@ import { mapActions } from 'vuex'
 export default {
   name: 'header-single',
   props: ['col'],
+  data () {
+    return {
+      prevXPos: 0,
+      startWidth: 0,
+      resizing: false
+    }
+  },
   computed: {
     sortAscend () {
       return {
@@ -33,8 +42,29 @@ export default {
     ...mapActions([
       'sortColumn'
     ]),
+    sortColumnResize (col) {
+      if (!this.resizing) {
+        this.sortColumn(col)
+      }
+    },
     titleValue (col) {
       return col.headerFormatter ? col.headerFormatter(col.title) : col.title
+    },
+    dragStart (e) {
+      this.prevXPos = e.clientX
+      this.startWidth = this.col.width
+      document.addEventListener('mousemove', this.drag)
+      document.addEventListener('mouseup', this.dragEnd)
+      this.resizing = true
+    },
+    drag (e) {
+      const totalMove = e.clientX - this.prevXPos
+      this.$store.dispatch('changeColWidth', { col: this.col, width: this.startWidth + totalMove })
+    },
+    dragEnd (e) {
+      document.removeEventListener('mousemove', this.drag)
+      document.removeEventListener('mouseup', this.dragEnd)
+      this.resizing = false
     }
   }
 }
