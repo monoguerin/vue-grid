@@ -42,8 +42,11 @@ export default {
     }
   },
   watch: {
-    column () {
-      console.log('colu')
+    column: {
+      handler: function (val) {
+        console.log('column prop changed', val.width)
+      },
+      deep: true
     }
   }
 }
