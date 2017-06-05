@@ -51,8 +51,8 @@ export default {
     ])
   },
   watch: {
-    columns () {
-      console.log('columns CHANGED')
+    columns (val) {
+      // console.log('columns CHANGED', val)
     }
   }
 }
