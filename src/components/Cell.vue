@@ -45,6 +45,7 @@ export default {
     column: {
       handler: function (val) {
         console.log('column prop changed', val.width)
+        this.inlineStyles.width = val.width + 'px'
       },
       deep: true
     }

@@ -2,7 +2,7 @@
   <div class="slick-header-column col slick-header-sortable"
     :class="[col.headerCssClass, sorted]"
     :style="{ width: col.width + 'px' }"
-    @click="sortColumnResize(col)">
+    @click="sortColumnResize(col, $event)">
     <span class="slick-column-name" v-html="titleValue(col)"></span>
     <span class="slick-sort-line"></span>
     <span class="slick-sort-indicator" :class="sortAscend"></span>
@@ -42,8 +42,8 @@ export default {
     ...mapActions([
       'sortColumn'
     ]),
-    sortColumnResize (col) {
-      if (!this.resizing) {
+    sortColumnResize (col, event) {
+      if (!event.target.classList.contains('slick-resizable-handle')) {
         this.sortColumn(col)
       }
     },
@@ -55,7 +55,6 @@ export default {
       this.startWidth = this.col.width
       document.addEventListener('mousemove', this.drag)
       document.addEventListener('mouseup', this.dragEnd)
-      this.resizing = true
     },
     drag (e) {
       const totalMove = e.clientX - this.prevXPos
@@ -64,7 +63,6 @@ export default {
     dragEnd (e) {
       document.removeEventListener('mousemove', this.drag)
       document.removeEventListener('mouseup', this.dragEnd)
-      this.resizing = false
     }
   }
 }
